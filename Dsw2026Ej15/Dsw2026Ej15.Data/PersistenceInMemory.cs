@@ -24,7 +24,7 @@ namespace Dsw2026Ej15.Data
 
         // Implementacion
 
-        public Task<Speciality?> GetSpecialityAsync(Guid id)
+        public Task<Speciality?> GetSpecialityByIdAsync(Guid id)
         {
             lock (_lock)
             {
@@ -51,7 +51,7 @@ namespace Dsw2026Ej15.Data
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Doctor>> GetDoctorsAsync()
+        public Task<IEnumerable<Doctor>>   GetActiveDoctorsAsync()
         {
 
             lock (_lock)
@@ -70,7 +70,7 @@ namespace Dsw2026Ej15.Data
 
         }
 
-        public Task <Doctor?> GetDoctorAsync(Guid id)
+        public Task <Doctor?> GetActiveDoctorByIdAsync(Guid id)
         {
             lock (_lock)
             {
@@ -122,9 +122,9 @@ namespace Dsw2026Ej15.Data
 
         private async Task LoadSpecialitiesAsync()
         {
-            var filePath= Path.Combine(AppContext.BaseDirectory, "Data", "Source", "specialities.json"); // esta línea de código construye la ruta al archivo JSON que contiene las especialidades.
+            var filePath= Path.Combine(AppContext.BaseDirectory, "Source", "specialities.json"); // esta línea de código construye la ruta al archivo JSON que contiene las especialidades.
                                                                                                          // AppContext.BaseDirectory devuelve el directorio base de la aplicación, y luego se combinan con "Data" y "specialities.json" para obtener la ruta completa al archivo.
-            if (File.Exists(filePath))
+            if (File.Exists(filePath)) 
             {
                 var json=await File.ReadAllTextAsync(filePath);
                 //esta línea de código lee el contenido del archivo JSON de forma asíncrona

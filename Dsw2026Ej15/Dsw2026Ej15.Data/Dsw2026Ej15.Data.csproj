@@ -14,4 +14,10 @@
     <Folder Include="Source\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Source\specialities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

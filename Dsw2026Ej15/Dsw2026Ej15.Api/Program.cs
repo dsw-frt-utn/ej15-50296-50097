@@ -27,7 +27,7 @@ using (var scope = app.Services.CreateScope())
         // PRUEBA A: Verificar si el archivo 'specialities.json' se cargó con éxito
         // Usamos el ID real de Cardiología que está dentro de tu archivo JSON
         var cardiologiaId = Guid.Parse("8a1f3b78-3f66-4d68-8d6e-1c5b9c7a2f41"); 
-        var especialidad = await persistence.GetSpecialityAsync(cardiologiaId);
+        var especialidad = await persistence.GetSpecialityByIdAsync(cardiologiaId);
         //guid.Parce hace que el string que le pasamos se convierta en un Guid, que es el tipo de dato que se usa para los IDs en este proyecto.
 
         if (especialidad != null)
@@ -49,7 +49,7 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"✅ PRUEBA ALMACENAMIENTO: '{medicoTest.Name}' guardado exitosamente en la lista en memoria.");
 
             // PRUEBA C: Listar todos los médicos activos para comprobar que se sostiene la información
-            var medicosActivos = await persistence.GetDoctorsAsync();
+            var medicosActivos = await persistence.GetActiveDoctorsAsync();
             Console.WriteLine("\n--- Médicos Activos Detectados en Memoria ---");
             foreach (var doc in medicosActivos)
             {
@@ -74,7 +74,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-Richmond:
+//Richmond:
 app.MapControllers();
 
 app.Run();
