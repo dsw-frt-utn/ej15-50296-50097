@@ -1,34 +1,80 @@
+using Dsw2026Ej15.Data;
+using Dsw2026Ej15.Domain;
+using Dsw2026Ej15.Domain.Entities;
 
-namespace Dsw2026Ej15.Api
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. REGISTRAR LA PERSISTENCIA EN EL CONTENEDOR DE DEPENDENCIAS
+// Aquí le indicas a .NET: "Cada vez que un componente pida IPersistence, entrégale la instancia única de PersistenceInMemory"
+builder.Services.AddSingleton<IPersistence, PersistenceInMemory>();
+
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+// ====================================================================
+// 2. SECCIÓN DE PRUEBA DE PERSISTENCIA (Solo para verificar que funciona)
+// ====================================================================
+using (var scope = app.Services.CreateScope())
 {
-    public class Program
+    // Solicitamos la instancia de persistencia que maneja la aplicación
+    var persistence = scope.ServiceProvider.GetRequiredService<IPersistence>();
+
+    Console.WriteLine("\n====== INICIANDO PRUEBAS DE PERSISTENCIA EN MEMORIA ======");
+
+    try
     {
-        public static void Main(string[] args)
+        // PRUEBA A: Verificar si el archivo 'specialities.json' se cargó con éxito
+        // Usamos el ID real de Cardiología que está dentro de tu archivo JSON
+        var cardiologiaId = Guid.Parse("8a1f3b78-3f66-4d68-8d6e-1c5b9c7a2f41"); 
+        var especialidad = await persistence.GetSpecialityAsync(cardiologiaId);
+        //guid.Parce hace que el string que le pasamos se convierta en un Guid, que es el tipo de dato que se usa para los IDs en este proyecto.
+
+        if (especialidad != null)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            Console.WriteLine($"✅ PRUEBA JSON PASADA: Especialidad encontrada -> {especialidad.Name}: {especialidad.Description}");
+        }
+        else
+        {
+            Console.WriteLine("❌ PRUEBA JSON FALLIDA: No se encontró la especialidad. Verifica que 'specialities.json' esté en la raíz de la API y con la propiedad 'Copiar en el directorio de salida' activada.");
+        }
 
-            // Add services to the container.
+        // PRUEBA B: Insertar un médico de prueba si la especialidad existe
+        if (especialidad != null)
+        {
+            var medicoTest = new Doctor("Dr. René Favaloro", "MN-12345", true, especialidad);
+            
 
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            await persistence.AddDoctorsAsync(medicoTest);
+            Console.WriteLine($"✅ PRUEBA ALMACENAMIENTO: '{medicoTest.Name}' guardado exitosamente en la lista en memoria.");
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            // PRUEBA C: Listar todos los médicos activos para comprobar que se sostiene la información
+            var medicosActivos = await persistence.GetDoctorsAsync();
+            Console.WriteLine("\n--- Médicos Activos Detectados en Memoria ---");
+            foreach (var doc in medicosActivos)
             {
-                app.MapOpenApi();
+                Console.WriteLine($"- Nombre: {doc.Name} | Matrícula: {doc.LicenseNumber} | Especialidad: {doc.Speciality.Name}");
             }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
         }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"💥 ERROR DURANTE LAS PRUEBAS: {ex.Message}");
+    }
+
+    Console.WriteLine("====== FIN DE LAS PRUEBAS DE PERSISTENCIA ======\n");
 }
+// ====================================================================
+
+// Configuración normal del pipeline de la API
+if (app.Environment.IsDevelopment())
+{
+    // Si usas Swagger, sus líneas irían aquí
+}
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+Richmond:
+app.MapControllers();
+
+app.Run();
