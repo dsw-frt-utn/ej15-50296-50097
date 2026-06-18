@@ -12,8 +12,10 @@ namespace Dsw2026Ej15.Data
         Task<IEnumerable<Doctor>> GetActiveDoctorsAsync();
         Task<Doctor?> GetActiveDoctorByIdAsync(Guid id); 
         Task<bool> DesactivateDoctorAsync(Guid id);
+        Task<Doctor> UpdateDoctorsAsync(Doctor doctor);
 
-       
+
+
 
 
     }
