@@ -1,6 +1,5 @@
 using Dsw2026Ej15.Api.Exceptions;
 using Dsw2026Ej15.Api.Midleware;
-using Dsw2026Ej15.Api.Test;
 using Dsw2026Ej15.Data;
 using Dsw2026Ej15.Domain;
 using Dsw2026Ej15.Domain.Entities;
