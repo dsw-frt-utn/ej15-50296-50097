@@ -12,15 +12,11 @@ namespace Dsw2026Ej15.Data
         private readonly List<Doctor> _doctors = new();
         private readonly List<Speciality> _specialities= new ();
 
-        private readonly object _lock = new (); // este objeto de tipo object se utiliza para sincronizar
-                                                // el acceso a los recursos compartidos, en este caso,
-                                                // las listas de doctores y especialidades. Al usar un lock,
-                                                // se asegura que solo un hilo pueda acceder a estas listas al mismo tiempo,
-                                                // evitando problemas de concurrencia y garantizando la integridad de los datos.
+        private readonly object _lock = new (); 
 
         public PersistenceInMemory()
         {
-            LoadSpecialitiesAsync().GetAwaiter().GetResult(); // este método se llama para cargar las especialidades en la lista de especialidades
+            LoadSpecialitiesAsync().GetAwaiter().GetResult(); 
         }
 
         // Implementacion
@@ -118,35 +114,22 @@ namespace Dsw2026Ej15.Data
         {
             try
             {
-                var filePath = Path.Combine(AppContext.BaseDirectory, "Source", "specialities.json"); // esta línea de código construye la ruta al archivo JSON que contiene las especialidades.
-                                                                                                      // AppContext.BaseDirectory devuelve el directorio base de la aplicación, y luego se combinan con "Data" y "specialities.json" para obtener la ruta completa al archivo.
-                if (File.Exists(filePath))
+                var filePath = Path.Combine(AppContext.BaseDirectory, "Source", "specialities.json"); 
                 {
                     var json = await File.ReadAllTextAsync(filePath);
-                    //esta línea de código lee el contenido del archivo JSON de forma asíncrona
-                    //utilizando el método File.ReadAllTextAsync. El resultado se almacena en la variable
-                    //json como una cadena de texto.
+                    
 
                     var option = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    // esta línea de código crea una instancia de JsonSerializerOptions y establece
-                    // la propiedad PropertyNameCaseInsensitive en true. Esto significa que al deserializar el JSON,
-                    // no se tendrá en cuenta la sensibilidad a mayúsculas y minúsculas en los nombres de las propiedades.
-                    // Por ejemplo, si el JSON tiene una propiedad "name" y la clase tiene una propiedad "Name",
-                    // se considerarán equivalentes durante la deserialización.
+                    
 
-                    var loadedSpecialities = JsonSerializer.Deserialize<List<Speciality>>(json, option);//option puede no estar
-                                                                                                        // esta línea de código deserializa el contenido del archivo JSON en una lista de objetos Speciality utilizando
-                                                                                                        // el método JsonSerializer.Deserialize. El resultado se almacena en la variable loadedSpecialities.
-                                                                                                        //deserializar es el proceso de convertir una cadena JSON en un objeto o una estructura de datos en memoria.
-                                                                                                        // var especialidadesCargadas= JsonSerializer.Deserializer<List<Speciality>>(json,option)
+                    var loadedSpecialities = JsonSerializer.Deserialize<List<Speciality>>(json, option);
 
                     if (loadedSpecialities != null)
                     {
                         lock (_lock)
                         {
                             _specialities.AddRange(loadedSpecialities);
-                            // esta sección de código se ejecuta dentro de un bloque lock para garantizar que solo un hilo
-                            // pueda acceder a la lista de especialidades al mismo tiempo.
+                           
                         }
                     }
 
