@@ -9,7 +9,7 @@ public class Doctor: BaseEntity
     public string Name { get; init; }
     public string LicenseNumber { get; init; }
     public bool IsActive { get; set; }
-    public Speciality Speciality { get; init; }
+    public Speciality Speciality { get; init; }//asociacion por agregacion , la clase medico agrega a la clase especialidad // si hy muchas especialidades haria una lista
 
     public Doctor(string name, string licenseNumber, Speciality speciality, bool isActive = true) : base()
     {

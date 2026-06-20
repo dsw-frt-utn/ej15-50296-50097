@@ -1,5 +1,5 @@
-using Dsw2026Ej15.Api.Exceptions;
-using Dsw2026Ej15.Api.Midleware;
+using Dsw2026Ej15.Domain.Exceptions;
+using Dsw2026Ej15.Api.Middleware;
 using Dsw2026Ej15.Data;
 using Dsw2026Ej15.Domain;
 using Dsw2026Ej15.Domain.Entities;
@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. REGISTRAR LA PERSISTENCIA EN EL CONTENEDOR DE DEPENDENCIAS
 // Aquí le indicas a .NET: "Cada vez que un componente pida IPersistence, entrégale la instancia única de PersistenceInMemory"
-builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+
 builder.Services.AddProblemDetails();
 builder.Services.AddSingleton<IPersistence, PersistenceInMemory>();
 builder.Services.AddControllers();
@@ -27,9 +27,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler();
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Basic health-check endpoint
 app.MapGet("/health-check", () => Results.Ok(new { status = "Healthy" }));

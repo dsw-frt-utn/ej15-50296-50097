@@ -17,6 +17,7 @@ public class DoctorsController : ControllerBase
     {
         _persistence = persistence;
     }
+   
 
     [HttpPost]
     public async Task<IActionResult> CreateADoctor([FromBody] DoctorDto.Request request)
@@ -58,6 +59,11 @@ public class DoctorsController : ControllerBase
             SpecialityName: d.Speciality.Name
         )).ToList();
         return Ok(dtoResponse);
+        //aqui va un not found pero no se si es necesario porque el get de todos los doctores activos no devuelve
+        //nada si no hay doctores activos, entonces el cliente recibe una lista vacía y no un not found
+        //poner la clase validation en DOMIINIO
+
+        
     }
 
     [HttpGet("{id}")]
