@@ -34,6 +34,11 @@ public class ExceptionHandlingMiddleware
             status = HttpStatusCode.BadRequest;
             message = ve.Message;
         }
+        if (ex is NotFoundException nfe)
+        {
+            status = HttpStatusCode.NotFound;
+            message = nfe.Message;
+        }
         var result = JsonSerializer.Serialize(new { error = message });
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)status;

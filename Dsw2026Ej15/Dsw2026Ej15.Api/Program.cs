@@ -18,7 +18,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-//PersistenceTest.TestPersistenceAsync(app).Wait();
+// Registrar el middleware de manejo de excepciones lo antes posible
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configuración normal del pipeline de la API
 if (app.Environment.IsDevelopment())
 { 
@@ -27,10 +29,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 
 // Basic health-check endpoint
 app.MapGet("/health-check", () => Results.Ok(new { status = "Healthy" }));

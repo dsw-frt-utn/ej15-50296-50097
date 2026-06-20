@@ -1,5 +1,6 @@
 ﻿using Dsw2026Ej15.Api.Dto;
 using Dsw2026Ej15.Data;
+using Dsw2026Ej15.Domain.Exceptions;
 using Dsw2026Ej15.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -24,13 +25,13 @@ public class DoctorsController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(request?.Name) || string.IsNullOrWhiteSpace(request?.LicenseNumber))
         {
-            return BadRequest("El nombre y la matrícula del médico son obligatorios.");
+            throw new ValidationException("El nombre y la matrícula del médico son obligatorios.");
         }
 
         var speciality = await _persistence.GetSpecialityByIdAsync(request.SpecialityId);
         if (speciality == null) 
         {
-            return BadRequest("La especialidad indicada no existe.");
+            throw new ValidationException("La especialidad indicada no existe.");
         }
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, speciality);
@@ -59,9 +60,7 @@ public class DoctorsController : ControllerBase
             SpecialityName: d.Speciality.Name
         )).ToList();
         return Ok(dtoResponse);
-        //aqui va un not found pero no se si es necesario porque el get de todos los doctores activos no devuelve
-        //nada si no hay doctores activos, entonces el cliente recibe una lista vacía y no un not found
-        //poner la clase validation en DOMIINIO
+       
 
         
     }
@@ -72,7 +71,7 @@ public class DoctorsController : ControllerBase
         var doctor = await _persistence.GetActiveDoctorByIdAsync(id);
         if (doctor == null)
         {
-            return NotFound("Médico no encontrado o Médico inactivo.");
+           throw new NotFoundException("Médico no encontrado o Médico inactivo.");
         }
         var dtoResponse = new DoctorDto.Response(
             Id: (Guid)doctor.Id,
@@ -90,7 +89,7 @@ public class DoctorsController : ControllerBase
         var success = await _persistence.DesactivateDoctorAsync(id);
         if (!success)
         {
-            return NotFound("Médico no encontrado o Médico inactivo.");
+            throw new NotFoundException("Médico no encontrado o Médico inactivo.");
         } 
         return NoContent();
     }
